@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Install Addy Osmani’s Agent Skills pack into Claude Code, Cursor, Gemini CLI, Codex, Copilot and 70+ more agents.">
+<title>Agent Skills | Cross-Agent Installation Guide</title>
+<style>
+  :root { color-scheme:dark; box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    --bg:#05060a; --card:rgba(255,255,255,.04); --line:rgba(255,255,255,.09); --text:#f4f6fb; --muted:#9aa3b5; --a1:#8b5cf6; --a2:#22d3ee; --a3:#f472b6; --code:#070a10; }
+  html { scroll-behavior:smooth; scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.65; overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1060px; margin:auto; padding:0 6%; }
+  .grad { background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3),var(--a1)); background-size:250% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:flow 6s linear infinite; }
+
+  /* background */
+  .bg { position:fixed; inset:0; z-index:-1; overflow:hidden; }
+  .bg::after { content:""; position:absolute; inset:0; background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px); background-size:56px 56px; -webkit-mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 70%); mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 70%); opacity:.55; }
+  .blob { position:absolute; width:46vmax; height:46vmax; border-radius:50%; filter:blur(90px); opacity:.35; animation:float 18s ease-in-out infinite alternate; }
+  .b1 { background:var(--a1); top:-18vmax; left:-10vmax; }
+  .b2 { background:var(--a2); top:10vmax; right:-16vmax; animation-delay:-6s; opacity:.25; }
+  .b3 { background:var(--a3); bottom:-24vmax; left:20vw; animation-delay:-11s; opacity:.18; }
+  #prog { position:fixed; top:0; left:0; height:3px; width:0; z-index:50; background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3)); }
+
+  /* header */
+  header { position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:rgba(5,6,10,.7); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
+  header .wrap { display:flex; justify-content:space-between; align-items:center; height:64px; }
+  .logo { font-weight:800; display:flex; align-items:center; gap:10px; letter-spacing:-.3px; }
+  .mark { width:28px; height:28px; border-radius:9px; display:grid; place-items:center; background:linear-gradient(135deg,var(--a1),var(--a2)); animation:pulse 3s ease-in-out infinite; }
+  .logo small { color:var(--muted); font-weight:400; font-size:.78rem; }
+  nav { display:flex; align-items:center; gap:22px; font-size:.9rem; color:var(--muted); }
+  nav a:hover { color:var(--text); }
+  .cta { padding:8px 18px; border-radius:30px; color:#fff; font-weight:600; font-size:.85rem; background:linear-gradient(90deg,var(--a1),var(--a2)); }
+
+  /* hero */
+  .hero { padding:96px 0 40px; text-align:center; }
+  .pill { display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border:1px solid var(--line); background:var(--card); border-radius:30px; font-size:.8rem; color:var(--a2); margin-bottom:24px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:#28c840; animation:blink 1.6s infinite; }
+  .hero h1 { font-size:clamp(2.5rem,8.5vw,4.8rem); line-height:1.05; letter-spacing:-2px; }
+  .type { display:inline-block; min-height:1.1em; }
+  .caret { display:inline-block; width:3px; height:.9em; background:var(--a2); margin-left:4px; vertical-align:-.08em; animation:blink 1s steps(1) infinite; }
+  .hero p { color:var(--muted); font-size:1.12rem; max-width:580px; margin:22px auto 0; }
+  .actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:32px; }
+  .btn { padding:14px 30px; border-radius:30px; font-weight:600; font-size:.95rem; transition:.25s; }
+  .btn.p { background:linear-gradient(90deg,var(--a1),var(--a2)); color:#fff; box-shadow:0 10px 40px rgba(139,92,246,.35); }
+  .btn.g { border:1px solid var(--line); background:var(--card); }
+  .btn:hover { transform:translateY(-3px); }
+
+  .term { max-width:640px; margin:54px auto 0; text-align:left; background:var(--code); border:1px solid var(--line); border-radius:16px; box-shadow:0 40px 100px rgba(139,92,246,.22); overflow:hidden; animation:rise 5s ease-in-out infinite alternate; }
+  .bar { display:flex; align-items:center; gap:7px; padding:12px 16px; background:rgba(255,255,255,.04); border-bottom:1px solid var(--line); }
+  .bar i { width:11px; height:11px; border-radius:50%; }
+  .bar i:nth-child(1){background:#ff5f57} .bar i:nth-child(2){background:#febc2e} .bar i:nth-child(3){background:#28c840}
+  .bar span { margin-left:10px; font-size:.75rem; color:var(--muted); }
+  .term pre { padding:18px; min-height:130px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82rem; color:#cbd5e6; overflow-x:auto; line-height:1.85; }
+  .pr { color:var(--a2); } .ok { color:#28c840; }
+
+  /* marquee */
+  .marq { margin:50px 0 0; overflow:hidden; border-block:1px solid var(--line); padding:16px 0; -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); }
+  .track { display:flex; gap:44px; width:max-content; animation:scroll 28s linear infinite; color:var(--muted); font-weight:600; white-space:nowrap; }
+  .track span::before { content:"✦"; color:var(--a1); margin-right:44px; }
+
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-top:44px; }
+  .stat { text-align:center; padding:24px 10px; border:1px solid var(--line); border-radius:16px; background:var(--card); }
+  .stat b { display:block; font-size:2.2rem; }
+  .stat span { color:var(--muted); font-size:.85rem; }
+
+  section { padding:84px 0 0; }
+  .eyebrow { color:var(--a2); font-size:.78rem; letter-spacing:2.5px; text-transform:uppercase; }
+  h2 { font-size:clamp(1.8rem,5vw,2.5rem); letter-spacing:-.8px; margin:8px 0 12px; }
+  .lead { color:var(--muted); max-width:620px; margin-bottom:32px; }
+
+  .steps,.grid { display:grid; gap:16px; }
+  .steps { grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+  .grid { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+  .card { position:relative; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:24px; transition:transform .25s,border-color .25s; overflow:hidden; transform-style:preserve-3d; }
+  .card::before { content:""; position:absolute; inset:0; background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(139,92,246,.22),transparent 70%); opacity:0; transition:opacity .3s; pointer-events:none; }
+  .card:hover { border-color:rgba(139,92,246,.6); }
+  .card:hover::before { opacity:1; }
+  .num { width:36px; height:36px; border-radius:11px; display:grid; place-items:center; font-weight:700; margin-bottom:14px; background:linear-gradient(135deg,var(--a1),var(--a2)); }
+  .card h3 { margin-bottom:6px; font-size:1.05rem; }
+  .card p { color:var(--muted); font-size:.92rem; margin-bottom:10px; }
+
+  .code { position:relative; background:var(--code); border:1px solid var(--line); border-radius:11px; padding:12px 68px 12px 14px; margin-top:8px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.78rem; color:#b8f0ff; overflow-x:auto; white-space:pre; }
+  .copy { position:absolute; top:7px; right:7px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--text); font-size:.7rem; padding:4px 10px; border-radius:8px; cursor:pointer; }
+  .copy:hover { border-color:var(--a2); }
+
+  .search { width:100%; padding:15px 20px; border-radius:30px; border:1px solid var(--line); background:var(--card); color:var(--text); font-size:1rem; margin-bottom:22px; outline:none; transition:.25s; }
+  .search:focus { border-color:var(--a1); box-shadow:0 0 0 4px rgba(139,92,246,.18); }
+  .empty { display:none; color:var(--muted); text-align:center; padding:20px; }
+  .note { border:1px solid var(--line); border-left:4px solid var(--a1); background:var(--card); padding:16px 20px; border-radius:12px; color:var(--muted); font-size:.93rem; margin-top:22px; }
+  .note b { color:var(--text); }
+
+  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:12px; transition:.25s; }
+  details[open] { border-color:rgba(139,92,246,.5); }
+  summary { cursor:pointer; font-weight:600; list-style:none; display:flex; justify-content:space-between; gap:12px; }
+  summary::after { content:"+"; color:var(--a2); font-size:1.3rem; line-height:1; transition:.25s; }
+  details[open] summary::after { transform:rotate(45deg); }
+  details p { color:var(--muted); margin-top:10px; font-size:.93rem; }
+
+  .maker { display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
+  .av { width:76px; height:76px; border-radius:50%; display:grid; place-items:center; font-size:2rem; font-weight:700; flex:none; background:linear-gradient(135deg,var(--a1),var(--a2),var(--a3)); background-size:200% 200%; animation:flow 5s linear infinite; }
+  .maker p { color:var(--muted); flex:1; min-width:220px; margin:0; }
+
+  .final { margin:90px 0 20px; text-align:center; padding:56px 24px; border:1px solid var(--line); border-radius:24px; background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(34,211,238,.1),rgba(244,114,182,.12)); background-size:200% 200%; animation:flow 10s ease infinite; }
+  .final h2 { margin-top:0; } .final p { color:var(--muted); margin-bottom:22px; }
+  footer { border-top:1px solid var(--line); margin-top:50px; padding:30px 0; color:var(--muted); font-size:.85rem; text-align:center; }
+
+  .rv { opacity:0; transform:translateY(34px); transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1); }
+  .rv.in { opacity:1; transform:none; }
+
+  @keyframes flow { to { background-position:250% 0; } }
+  @keyframes float { to { transform:translate(8vmax,6vmax) scale(1.15); } }
+  @keyframes blink { 50% { opacity:.2; } }
+  @keyframes pulse { 50% { box-shadow:0 0 0 8px rgba(139,92,246,.15); } }
+  @keyframes scroll { to { transform:translateX(-50%); } }
+  @keyframes rise { to { transform:translateY(-10px); } }
+  @media (max-width:640px){ nav a:not(.cta){display:none;} .hero{padding-top:64px;} }
+  @media (prefers-reduced-motion:reduce){ *,*::before { animation:none !important; transition:none !important; } .rv { opacity:1; transform:none; } }
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div id="prog"></div>
+
+<header>
+  <div class="wrap">
+    <a href="#top" class="logo"><span class="mark">⚡</span>Agent Skills <small>by Jaihind</small></a>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#agents">Agents</a>
+      <a href="#faq">Fixes</a>
+      <a href="#install" class="cta">Install now</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <div class="hero">
+    <span class="pill rv"><span class="dot"></span>Verified 26 Sep 2026</span>
+    <h1 class="rv">One skill pack for<br><span class="grad type" id="tw"></span><span class="caret"></span></h1>
+    <p class="rv">Addy Osmani’s production-oriented engineering workflow pack, installed into every major AI coding agent.</p>
+    <div class="actions rv">
+      <a href="#install" class="btn p">Get started</a>
+      <a href="#agents" class="btn g">Find your agent</a>
+    </div>
+    <div class="term rv">
+      <div class="bar"><i></i><i></i><i></i><span>~/my-project</span></div>
+<pre id="tm"></pre>
+    </div>
+  </div>
+
+  <div class="marq"><div class="track" id="mq"></div></div>
+
+  <div class="stats">
+    <div class="stat rv"><b class="grad" data-c="25">0</b><span>Workflow skills</span></div>
+    <div class="stat rv"><b class="grad" data-c="70" data-s="+">0</b><span>Agents via npx</span></div>
+    <div class="stat rv"><b class="grad" data-c="10" data-s="+">0</b><span>Native integrations</span></div>
+    <div class="stat rv"><b class="grad" data-c="1">0</b><span>Portable format</span></div>
+  </div>
+
+  <section id="how">
+    <span class="eyebrow rv">How it works</span>
+    <h2 class="rv">One format, three ways in</h2>
+    <p class="lead rv">Agent Skills is a portable Markdown workflow format. Your agent decides how SKILL.md files are discovered and run.</p>
+    <div class="steps">
+      <div class="card rv"><div class="num">1</div><h3>Skills</h3><p>Workflow instructions such as TDD, code review and security hardening. Processes, not static docs.</p></div>
+      <div class="card rv"><div class="num">2</div><h3>Native integration</h3><p>Use your agent’s own plugin mechanism where one is documented.</p></div>
+      <div class="card rv"><div class="num">3</div><h3>Universal CLI</h3><p>One <code>npx skills add</code> command reaches 70+ agents.</p></div>
+    </div>
+    <div class="note rv"><b>Important:</b> Don’t copy the repo’s root AGENTS.md or CLAUDE.md into your own projects. Those configure contributors to the repo itself. Reusable assets live under <code>skills/</code>.</div>
+  </section>
+
+  <section id="install">
+    <span class="eyebrow rv">Fastest route</span>
+    <h2 class="rv">Universal installation</h2>
+    <p class="lead rv">Works for any agent supported by the open skills CLI.</p>
+    <div class="card rv">
+      <div class="code">npx --version<button class="copy">Copy</button></div>
+      <div class="code">npx skills add addyosmani/agent-skills --list<button class="copy">Copy</button></div>
+      <div class="code">npx skills add addyosmani/agent-skills<button class="copy">Copy</button></div>
+    </div>
+    <div class="note rv">The target list evolves. Run <b>--list</b> to see what’s supported now, then restart your agent so skill discovery refreshes.</div>
+  </section>
+
+  <section id="agents">
+    <span class="eyebrow rv">Native setups</span>
+    <h2 class="rv">Find your agent</h2>
+    <p class="lead rv">Use the native route where your agent provides one.</p>
+    <input class="search rv" id="q" type="search" placeholder="Search: Claude, Cursor, Gemini, Codex…" autocomplete="off">
+    <div class="grid" id="list">
+      <div class="card rv" data-n="claude code"><h3>Claude Code</h3><p>Plugin marketplace.</p>
+        <div class="code">/plugin marketplace add https://github.com/addyosmani/agent-skills.git<button class="copy">Copy</button></div>
+        <div class="code">/plugin install agent-skills@addy-agent-skills<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="antigravity agy"><h3>Antigravity</h3><p>Install, then restart and start a fresh session.</p>
+        <div class="code">agy plugin install https://github.com/addyosmani/agent-skills.git<button class="copy">Copy</button></div>
+        <div class="code">agy plugin list<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="gemini cli"><h3>Gemini CLI</h3><p>Confirm with /skills list.</p>
+        <div class="code">gemini skills install https://github.com/addyosmani/agent-skills.git --path skills<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="cursor"><h3>Cursor</h3><p>Sync into .cursor/skills/.</p>
+        <div class="code">git clone https://github.com/addyosmani/agent-skills.git<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="codex cli openai"><h3>Codex CLI (v0.122+)</h3><p>Plugin marketplace.</p>
+        <div class="code">codex plugin marketplace add addyosmani/agent-skills<button class="copy">Copy</button></div>
+        <div class="code">codex plugin add agent-skills@agent-skills<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="github copilot vscode"><h3>GitHub Copilot</h3><p>Custom agent files must end in .agent.md.</p>
+        <div class="code">copilot plugin install addyosmani/agent-skills<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="windsurf"><h3>Windsurf</h3><p>Keep it to 2–3 essential skills.</p>
+        <div class="code">cat skills/test-driven-development/SKILL.md > .windsurfrules<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="opencode"><h3>OpenCode</h3><p>Uses the universal CLI.</p>
+        <div class="code">npx skills add addyosmani/agent-skills<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="command code cmd"><h3>Command Code</h3><p>Global install.</p>
+        <div class="code">cmd skills add addyosmani/agent-skills --global<button class="copy">Copy</button></div></div>
+      <div class="card rv" data-n="kiro"><h3>Kiro</h3><p>Place skills under .kiro/skills/.</p></div>
+    </div>
+    <div class="empty" id="empty">No match. Try the universal command above.</div>
+  </section>
+
+  <section id="faq">
+    <span class="eyebrow rv">Troubleshooting</span>
+    <h2 class="rv">Common issues</h2>
+    <p class="lead rv">The fastest fix for each.</p>
+    <details class="rv"><summary>agy is not recognized</summary><p>Restart PowerShell and check your PATH.</p></details>
+    <details class="rv"><summary>Plugin installed but no skills show up</summary><p>Restart the agent and start a new session.</p></details>
+    <details class="rv"><summary>Cursor can’t see the skills</summary><p>Confirm that .cursor/skills/&lt;name&gt;/SKILL.md exists.</p></details>
+    <details class="rv"><summary>Codex plugin command is missing</summary><p>Check that your CLI is v0.122 or newer.</p></details>
+    <details class="rv"><summary>A skill isn’t triggering</summary><p>Check the skill’s name and description, or invoke it explicitly where your agent supports it.</p></details>
+  </section>
+
+  <section>
+    <span class="eyebrow rv">About the creator</span>
+    <h2 class="rv">Made by Jaihind</h2>
+    <div class="card maker rv">
+      <div class="av">J</div>
+      <p>Hi, I’m Jaihind from Tamil Nadu. I’m learning Python and building apps and websites. This guide is one of my projects.</p>
+    </div>
+  </section>
+
+  <div class="final rv">
+    <h2>Ready to level up your agent?</h2>
+    <p>One command. Restart. Start building with proven workflows.</p>
+    <a href="#install" class="btn p">Install Agent Skills</a>
+  </div>
+
+</main>
+
+<footer><div class="wrap">Made by <b style="color:var(--text)">Jaihind</b> · Source: github.com/addyosmani/agent-skills · Guide verified 26 Sep 2026</div></footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // copy buttons
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click', function(){
+      var t = b.parentElement.firstChild.textContent;
+      var done = function(){ b.textContent='Copied!'; setTimeout(function(){ b.textContent='Copy'; },1500); };
+      if (navigator.clipboard) { navigator.clipboard.writeText(t).then(done); }
+      else { var a=document.createElement('textarea'); a.value=t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); done(); }
+    });
+  });
+
+  // search
+  var q=document.getElementById('q'), cards=document.querySelectorAll('#list .card'), empty=document.getElementById('empty');
+  q.addEventListener('input', function(){
+    var v=q.value.toLowerCase().trim(), n=0;
+    cards.forEach(function(c){ var m=!v||c.dataset.n.indexOf(v)>-1; c.style.display=m?'':'none'; if(m) n++; });
+    empty.style.display=n?'none':'block';
+  });
+
+  // marquee
+  var names=['Claude Code','Cursor','Gemini CLI','Codex CLI','GitHub Copilot','Windsurf','OpenCode','Kiro','Antigravity','Command Code'];
+  var mq=document.getElementById('mq'), h=''; for(var i=0;i<2;i++) names.forEach(function(n){ h+='<span>'+n+'</span>'; }); mq.innerHTML=h;
+
+  // typewriter heading
+  var words=['Claude Code.','Cursor.','Gemini CLI.','Codex.','every AI agent.'], tw=document.getElementById('tw'), wi=0, ci=0, del=false;
+  function tick(){
+    var w=words[wi];
+    if(!del){ ci++; tw.textContent=w.slice(0,ci); if(ci===w.length){ del=true; return setTimeout(tick,1500); } }
+    else { ci--; tw.textContent=w.slice(0,ci); if(ci===0){ del=false; wi=(wi+1)%words.length; } }
+    setTimeout(tick, del?45:90);
+  }
+  if(reduce){ tw.textContent='every AI agent.'; } else { tick(); }
+
+  // terminal typing
+  var lines=[['pr','$ npx skills add addyosmani/agent-skills'],['ok','✔ 25 skills found'],['ok','✔ Installed for your agent'],['pr','$ # restart your agent, start a new session']];
+  var tm=document.getElementById('tm');
+  function render(l,c){ var o=''; for(var i=0;i<lines.length;i++){ if(i<l) o+='<span class="'+lines[i][0]+'">'+lines[i][1]+'</span>\n'; else if(i===l){ o+='<span class="'+lines[i][0]+'">'+lines[i][1].slice(0,c)+'</span>'; } } tm.innerHTML=o; }
+  function typeTerm(l,c){
+    if(l>=lines.length){ return setTimeout(function(){ typeTerm(0,0); },3500); }
+    if(c<=lines[l].length){ render(l,c); return setTimeout(function(){ typeTerm(l,c+1); }, lines[l][0]==='ok'?14:32); }
+    setTimeout(function(){ typeTerm(l+1,0); },350);
+  }
+  if(reduce){ render(lines.length,0); } else { typeTerm(0,0); }
+
+  // scroll reveal + counters
+  function count(el){
+    var to=+el.dataset.c, s=el.dataset.s||'', st=null;
+    if(reduce){ el.textContent=to+s; return; }
+    function step(t){ if(!st) st=t; var p=Math.min((t-st)/1200,1); el.textContent=Math.round(to*(1-Math.pow(1-p,3)))+s; if(p<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); var c=e.target.querySelector('[data-c]'); if(c) count(c); io.unobserve(e.target); } }); },{threshold:.12});
+  document.querySelectorAll('.rv').forEach(function(el,i){ el.style.transitionDelay=((i%4)*70)+'ms'; io.observe(el); });
+
+  // spotlight + tilt on cards
+  document.querySelectorAll('.card').forEach(function5 => {
+    c.addEventListener('pointermove', function(e){
+      var r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+      c.style.setProperty('--mx',x+'px'); c.style.setProperty('--my',y+'px');
+    });
+  });
+
+  // scroll progress
+  var p=document.getElementById('prog');
+  addEventListener('scroll', function(){ var d=document.documentElement; p.style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%'; },{passive:true});
+})();
+</script>
+</body>
+</html>
